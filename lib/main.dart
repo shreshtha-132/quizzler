@@ -65,7 +65,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                quizBrain.questionBank[i].questionText,
+                quizBrain.getQuestionText(i),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -94,7 +94,7 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 setState(() {
-                  if (quizBrain.questionBank[i].questionAnswer == true) {
+                  if (quizBrain.getQuestionAnswer(i) == true) {
                     scoreKeeper.add(Icon(
                       Icons.check,
                       color: Colors.green,
@@ -132,7 +132,7 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 setState(() {
-                  if (quizBrain.questionBank[i].questionAnswer == false) {
+                  if (quizBrain.getQuestionAnswer(i) == false) {
                     scoreKeeper.add(Icon(
                       Icons.check,
                       color: Colors.green,
