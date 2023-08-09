@@ -1,10 +1,56 @@
 import 'package:flutter/material.dart';
 import 'question.dart';
 import 'quiz_brain.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 QuizBrain quizBrain = QuizBrain();
+int finalScore = 0;
 
-void main() => runApp(Quizzler());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: Directionality(
+      textDirection: TextDirection.ltr, // or TextDirection.rtl as needed
+      child: SplashScreen(),
+    ),
+  ));
+}
+
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Perform any initialization here
+    // Example: Load data, set up services, etc.
+    // After initialization, navigate to the next screen.
+    Future.delayed(Duration(seconds: 5), () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Quizzler()),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Image.asset('images/splash.png'),
+      ),
+    );
+  }
+}
 
 class Quizzler extends StatelessWidget {
   @override
@@ -12,6 +58,10 @@ class Quizzler extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        appBar: AppBar(
+          title: Center(child: Text("Quizzler")),
+          backgroundColor: Colors.grey.shade900,
+        ),
         backgroundColor: Colors.grey.shade900,
         body: SafeArea(
           child: Padding(
@@ -30,16 +80,14 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
-  List<Widget> scoreKeeper = [
-    // Icon(
-    //   Icons.check,
-    //   color: Colors.green,
-    // ),
-    // Icon(
-    //   Icons.close,
-    //   color: Colors.red,
-    // )
-  ];
+  // Icon(
+  //   Icons.check,
+  //   color: Colors.green,
+  // ),
+  // Icon(
+  //   Icons.close,
+  //   color: Colors.red,
+  // )
 
   // List<String> questions = [
   //   'You can lead a cow down stairs but not up stairs.',
@@ -52,7 +100,35 @@ class _QuizPageState extends State<QuizPage> {
   // Question q1 = Question(
   //     q: 'You can lead a cow down stairs but not up stairs.', a: false);
 
-  int i = 0;
+  // int i = 0;
+  @override
+  Widget build(BuildContext context) {
+    // return Text("hello");
+    return PageView.builder(
+        itemCount: quizBrain.questionBank.length,
+        itemBuilder: (context, index) {
+          return QuestionWidget(i: index);
+        });
+  }
+}
+
+/*
+question1: 'You can lead a cow down stairs but not up stairs.', false,
+question2: 'Approximately one quarter of human bones are in the feet.', true,
+question3: 'A slug\'s blood is green.', true,
+*/
+
+class QuestionWidget extends StatefulWidget {
+  late int i;
+  QuestionWidget({required this.i});
+
+  @override
+  _QuestionWidgetState createState() => _QuestionWidgetState();
+}
+
+class _QuestionWidgetState extends State<QuestionWidget> {
+  List<Widget> scoreKeeper = [];
+  bool scoreAdded = true;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -65,7 +141,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                quizBrain.getQuestionText(i),
+                quizBrain.getQuestionText(widget.i),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -92,26 +168,40 @@ class _QuizPageState extends State<QuizPage> {
                   fontSize: 20.0,
                 ),
               ),
+
               onPressed: () {
                 setState(() {
-                  if (quizBrain.getQuestionAnswer(i) == true) {
-                    scoreKeeper.add(Icon(
-                      Icons.check,
-                      color: Colors.green,
-                    ));
-                  } else {
-                    scoreKeeper.add(Icon(
-                      Icons.close,
-                      color: Colors.red,
-                    ));
-                  }
-                  if (i < 12) {
-                    i++;
+                  if (quizBrain.getQuestionAnswer(widget.i) == true) {
+                    if (scoreAdded) {
+                      finalScore++;
+                      scoreAdded = false;
+                    }
                   }
                 });
-
-                //The user picked true.
               },
+              // onPressed: () {
+              //   if (iconAdded) {
+              //     iconAdded = false;
+              //     setState(() {
+              //       if (quizBrain.getQuestionAnswer(widget.i) == true) {
+              //         scoreKeeper.add(Icon(
+              //           Icons.check,
+              //           color: Colors.green,
+              //         ));
+              //       } else {
+              //         scoreKeeper.add(Icon(
+              //           Icons.close,
+              //           color: Colors.red,
+              //         ));
+              //       }
+              //       // if (widget.i < 12) {
+              //       //   widget.i++;
+              //       // }
+              //     });
+              //   }
+              //
+              //   //The user picked true.
+              // },
             ),
           ),
         ),
@@ -130,40 +220,61 @@ class _QuizPageState extends State<QuizPage> {
                   color: Colors.white,
                 ),
               ),
+
               onPressed: () {
                 setState(() {
-                  if (quizBrain.getQuestionAnswer(i) == false) {
-                    scoreKeeper.add(Icon(
-                      Icons.check,
-                      color: Colors.green,
-                    ));
-                  } else {
-                    scoreKeeper.add(Icon(
-                      Icons.close,
-                      color: Colors.red,
-                    ));
-                  }
-                  if (i < 12) {
-                    i++;
+                  if (quizBrain.getQuestionAnswer(widget.i) == false) {
+                    if (scoreAdded) {
+                      finalScore++;
+                      scoreAdded = false;
+                    }
                   }
                 });
-
-                //The user picked false.
               },
+
+              // onPressed: () {
+              //   if (iconAdded) {
+              //     iconAdded = false;
+              //     setState(() {
+              //       if (quizBrain.getQuestionAnswer(widget.i) == false) {
+              //         scoreKeeper.add(Icon(
+              //           Icons.check,
+              //           color: Colors.green,
+              //         ));
+              //       } else {
+              //         scoreKeeper.add(Icon(
+              //           Icons.close,
+              //           color: Colors.red,
+              //         ));
+              //       }
+              //       // if (widget.i < 12) {
+              //       //   widget.i++;
+              //       // }
+              //     });
+              //   }
+              //
+              //   //The user picked false.
+              // },
             ),
           ),
         ),
         //TODO: Add a Row here as your score keeper
-        Row(
-          children: scoreKeeper,
-        )
+        Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Score : ",
+                style: TextStyle(fontSize: 30, color: Colors.white),
+              ),
+              Text(
+                finalScore.toString(),
+                style: TextStyle(fontSize: 30, color: Colors.white),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
 }
-
-/*
-question1: 'You can lead a cow down stairs but not up stairs.', false,
-question2: 'Approximately one quarter of human bones are in the feet.', true,
-question3: 'A slug\'s blood is green.', true,
-*/

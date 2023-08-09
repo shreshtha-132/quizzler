@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "731799682433",
+    "project_id": "quizzler-6cd14",
+    "storage_bucket": "quizzler-6cd14.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:731799682433:android:add88a57f063f074b13c80",
+        "android_client_info": {
+          "package_name": "com.example.quizzler"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "731799682433-ac945cfcp0l55t5efpbnhtbf2s3lef53.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiyW_98jG55PEMeBy9GDXOtUN7lyrAxDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "731799682433-ac945cfcp0l55t5efpbnhtbf2s3lef53.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "731799682433-3qipj4p2lqd55tpge2dpim24ssob7ufo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.quizzler"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
